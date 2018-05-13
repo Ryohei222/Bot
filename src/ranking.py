@@ -35,6 +35,42 @@ def GetTweepyAuth():
     auth.set_access_token(tokens['AT'], tokens['AS'])
     return auth
 
+def UpdateProblemsID(): 
+    # APIを叩いてDB(probleminfo)に問題がなければ追加します
+    # 形式: problem_id contest_id point
+    # ex)arc064_d|arc064|1000.0
+    # sqlite3
+    conn = sqlite3.connect(str(Path.cwd()/'db'/'info.db'))
+    c = conn.cursor()
+
+    # APIを叩く
+    url = 'https://kenkoooo.com/atcoder/atcoder-api/info/merged-problems'
+    response = urllib.request.urlopen(url)
+    data = json.loads(response.read().decode('utf8'))
+    sql = 'insert into probleminfo values(?, ?, ?)'
+    checksql = 'select * from probleminfo where problem_id = ?'
+
+    ans = 0
+
+    for item in data:
+        problem_id = item['id']
+        contest_id = item['contest_id']
+        point = 0.0
+        if 'point' in item:
+            point = item['point']
+    
+        c.execute(checksql, (problem_id,))
+        res = c.fetchone()
+
+        if not res:
+            c.execute(sql, (problem_id, contest_id, point))
+            ans += 1
+
+    conn.commit()
+    conn.close()
+
+    return ans
+
 '''
 def GetFollowerInfo():
     """
