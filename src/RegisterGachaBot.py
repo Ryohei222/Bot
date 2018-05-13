@@ -19,6 +19,7 @@ import ranking
 auth = ranking.GetTweepyAuth()
 api = tweepy.API(auth)
 
+'''
 probdict = dict()
 tempratedict = dict()
 flag = date.today()
@@ -41,7 +42,6 @@ def SetTemrateDict():
         probdict[item[0]] = tempratedict
         uflag[item[0]] = False
 
-'''
 def GetProblems(scores, user):
     ret = list()
 
@@ -175,8 +175,6 @@ class MyStreamListener(tweepy.StreamListener):
             print(status)
 
         return True
-
-
 
 
 listener = MyStreamListener()
