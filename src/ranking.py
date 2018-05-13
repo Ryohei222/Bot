@@ -19,11 +19,21 @@ def GetTweepyAPI():
     """
     conf.yamlからトークンを読み込んでAPIインスタンスを返します
     """
-    f = open(Path.cwd()/'conf.yaml', 'r+')
+    f = open(str(Path.cwd()/'conf.yaml'), 'r+')
     tokens = yaml.load(f)
     auth = tweepy.OAuthHandler(tokens['CK'], tokens['CS'])
     auth.set_access_token(tokens['AT'], tokens['AS'])
     return tweepy.API(auth)
+
+def GetTweepyAuth():
+    """
+    conf.yamlからトークンを読み込んでTwitterオブジェクトを返します
+    """
+    f = open(str(Path.cwd()/'conf.yaml'), 'r+')
+    tokens = yaml.load(f)
+    auth = tweepy.OAuthHandler(tokens['CK'], tokens['CS'])
+    auth.set_access_token(tokens['AT'], tokens['AS'])
+    return auth
 
 '''
 def GetFollowerInfo():

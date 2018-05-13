@@ -1,5 +1,5 @@
 # coding: UTF-8
-import datetime
+from datetime import datetime, date
 import json
 import re
 import sqlite3
@@ -17,16 +17,19 @@ import yaml
 
 import ranking
 
-sys.path.append(Path.cwd())
+sys.path.append(str(Path.cwd()))
+
+def epoch_to_date(epoch):
+    return datetime(*time.localtime(epoch)[:6]).date()
 
 def TweettoNoticeUsers():
     """
     今日ACしていない精進Botの登録したフォロワーにリプライを送ります
     """
 
-    conn = sqlite3.connect(Path.cwd()/'db'/'info.db')
+    conn = sqlite3.connect(str(Path.cwd()/'db'/'info.db'))
     c = conn.cursor()
-    checksql = 'select * from userinfo where notice = 1'
+    checksql = 'select * from userinfo'
     c.execute(checksql)
     res = c.fetchall()
 
@@ -40,16 +43,18 @@ def TweettoNoticeUsers():
         data = json.loads(response.read().decode('utf8'))
         
         flag = True
+        today = date.today()
 
         for i in data:
-            if i['result'] == 'AC' and int(i['epoch_second']) >= Today:
+            if i['result'] == 'AC' and epoch_to_date(int(i['epoch_second'])) == today:
                 flag = False
                 break
             
         if flag:
-            # api.update_status(status='今日ACを確認していません', in_reply_to_status_id=i[0])
-            print(i[0])
+            # api.update_status(status='今日ACを確認していません', in_reply_to_status_id=item[0])
+            print('@' + item[0] + '(' + item[1] +')は今日ACをしていません')
+        else:
+            print('@' + item[0] + '(' + item[1] + ')は今日ACをしています！')
 
 
-if __name__ == 'main':
-    TweettoNoticeUsers()
+TweettoNoticeUsers()
